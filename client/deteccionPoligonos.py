@@ -8,6 +8,9 @@ Created on Wed Apr  6 10:59:13 2022
 import cv2
 import numpy as np
 from Cut import Cut
+import base64
+import os
+
 
 nameWindow="Calculadora"
 def nothing(x):
@@ -63,6 +66,23 @@ def detectarForma(imagen):
 
     return imagen
 
+
+
+
+
+def readImages():
+    images = []
+    content = os.listdir('Crops')
+    for c in content:        
+        images.append(codeImages(cv2.imread("Crops/"+c)))
+    return images
+    
+
+def codeImages(image):
+    retval, buffer = cv2.imencode('.jpg', image)
+    return base64.b64encode(buffer)
+    
+
 # def mostrarMensaje(mensaje, imagen,figuraActual):
 #     cv2.putText(imagen, mensaje, (10,70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 #     # cv2.drawContours(imagen, [figuraActual], 0, (0, 0, 255), 2)
@@ -73,11 +93,15 @@ video=cv2.VideoCapture(0)
 constructorVentana()
 bandera=True
 mostrar=False
+images64 = []
 while bandera:
     _,imagen = video.read()     
     
     #Parar el programa
     k = cv2.waitKey(5) & 0xFF
+    if k == 101:
+        images64 = readImages()
+        print(images64)
     if k == 99:
         mostrar = True     
     if k == 27:
