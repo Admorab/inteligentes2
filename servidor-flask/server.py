@@ -17,10 +17,10 @@ def test():
     return jsonify(json)
 
 
-@app.route("/data", methods=['POST'])
-def receive(data):
-    print(data)
+@app.route("/predict", methods=['POST'])
+def receive():    
     json = {"message": "Server running OK"}
+    print(request)
     return jsonify(json)
 
 

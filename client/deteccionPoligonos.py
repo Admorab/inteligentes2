@@ -10,8 +10,8 @@ import numpy as np
 from Cut import Cut
 import base64
 import os
-
-
+import requests as http
+# from predict_model import predict
 nameWindow="Calculadora"
 def nothing(x):
     pass
@@ -82,7 +82,9 @@ def codeImages(image):
     retval, buffer = cv2.imencode('.jpg', image)
     return base64.b64encode(buffer)
     
-
+def sendImages64(images, url, predict):
+    return http.post(url, predict)
+    
 # def mostrarMensaje(mensaje, imagen,figuraActual):
 #     cv2.putText(imagen, mensaje, (10,70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 #     # cv2.drawContours(imagen, [figuraActual], 0, (0, 0, 255), 2)
@@ -94,6 +96,7 @@ constructorVentana()
 bandera=True
 mostrar=False
 images64 = []
+url = "http://127.0.0.1:8181/data"
 while bandera:
     _,imagen = video.read()     
     
@@ -101,7 +104,8 @@ while bandera:
     k = cv2.waitKey(5) & 0xFF
     if k == 101:
         images64 = readImages()
-        print(images64)
+        sendImages64(images64, url, {"llave": "valor"})
+        # print(images64)
     if k == 99:
         mostrar = True     
     if k == 27:
