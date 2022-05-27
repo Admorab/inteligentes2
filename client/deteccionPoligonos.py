@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Apr  6 10:59:13 2022
-
-@author: luisd
-"""
-
+import json
 import cv2
 import numpy as np
 from Cut import Cut
@@ -15,19 +9,19 @@ import requests as http
 from models.predict_model import Predict
 
 # from predict_model import predict
-nameWindow = "Calculadora"
+# nameWindow = "Calculadora"
 
 
 def nothing(x):
     pass
 
 
-def constructorVentana():
-    cv2.namedWindow(nameWindow)
-    cv2.createTrackbar("min", nameWindow, 0, 255, nothing)
-    cv2.createTrackbar("max", nameWindow, 100, 255, nothing)
-    cv2.createTrackbar("kernel", nameWindow, 1, 100, nothing)
-    cv2.createTrackbar("areaMin", nameWindow, 500, 1000, nothing)
+# def constructorVentana():
+#     cv2.namedWindow(nameWindow)
+#     cv2.createTrackbar("min", nameWindow, 0, 255, nothing)
+#     cv2.createTrackbar("max", nameWindow, 100, 255, nothing)
+#     cv2.createTrackbar("kernel", nameWindow, 1, 100, nothing)
+#     cv2.createTrackbar("areaMin", nameWindow, 500, 1000, nothing)
 
 
 def calcularAreas(figuras):
@@ -50,26 +44,29 @@ def detectarForma(imagen):
 
     bordes = cv2.Canny(imagenGris, min, max)
 
-    tamañoKernel = cv2.getTrackbarPos("kernel", nameWindow)
+    # tamañoKernel = cv2.getTrackbarPos("kernel", nameWindow)
     tamañoKernel = 10
     kernel = np.ones((tamañoKernel, tamañoKernel), np.uint8)
     bordes = cv2.dilate(bordes, kernel)
     cv2.imshow("Bordes", bordes)
 
     # Detección de la figura
-    figuras, jerarquia = cv2.findContours(bordes, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    figuras, jerarquia = cv2.findContours(
+        bordes, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     areas = calcularAreas(figuras)
-    areaMin = cv2.getTrackbarPos("areaMin", nameWindow)
+    # areaMin = cv2.getTrackbarPos("areaMin", nameWindow)
     areaMin = 0
     i = 0
     cut = Cut()
     for figuraActual in figuras:
         if areas[i] >= areaMin:
             i = i + 1
-            vertices = cv2.approxPolyDP(figuraActual, 0.05 * cv2.arcLength(figuraActual, True), True)
+            vertices = cv2.approxPolyDP(
+                figuraActual, 0.05 * cv2.arcLength(figuraActual, True), True)
             if len(vertices) == 4:
                 mensaje = "Cuadrado"
-                cv2.putText(imagen, mensaje, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                cv2.putText(imagen, mensaje, (10, 70),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
                 cv2.drawContours(imagen, [figuraActual], 0, (0, 0, 255), 2)
                 cut.crop(imagenGris, [figuraActual], 1)
 
@@ -79,19 +76,32 @@ def detectarForma(imagen):
 def readImages():
     images = []
     content = os.listdir('Crops')
+    cont = 0
     for c in content:
-        images.append(codeImages(cv2.imread("Crops/" + c)))
+        images.append(codeImages(cv2.imread("Crops/" + c), cont))
+        cont += 1
     return images
 
 
-def codeImages(image):
+def codeImages(image, index):
     retval, buffer = cv2.imencode('.jpg', image)
-    return base64.b64encode(buffer)
+    image = {
+        "id": index,
+        "content": base64.b64encode(buffer).decode("utf-8")
+    }
+    return image
 
 
 def sendImages64(images, url, id_client):
-    predict = Predict(id_client, images, [id_client])
-    return http.post(url, predict.to_dict())
+    # predict = Predict(id_client, images, [id_client])
+    predict = {
+        "id_client": id_client,
+        "images": images,
+        "models": [
+            "1"
+        ]
+    }    
+    return http.post(url, json=predict).content
 
 
 # def mostrarMensaje(mensaje, imagen,figuraActual):
@@ -101,11 +111,11 @@ def sendImages64(images, url, id_client):
 # Apertura cámara
 # cut = Cut()
 video = cv2.VideoCapture(0)
-constructorVentana()
+# constructorVentana()
 bandera = True
 mostrar = False
 images64 = []
-url = "http://127.0.0.1:8181/data"
+url = "http://127.0.0.1:8181/predict"
 while bandera:
     _, imagen = video.read()
 
@@ -113,8 +123,8 @@ while bandera:
     k = cv2.waitKey(5) & 0xFF
     if k == 101:
         images64 = readImages()
-        sendImages64(images64, url, "1")
-        # print(images64)
+        # sendImages64(images64, url, "1")
+        print("RespuestaServidor:",sendImages64(images64, url, "1"))
     if k == 99:
         mostrar = True
     if k == 27:
