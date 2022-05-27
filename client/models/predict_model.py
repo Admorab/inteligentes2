@@ -53,6 +53,11 @@ class Predict:
     images: List[Image]
     models: List[str]
 
+    def __init__(self, id_client, images, models):
+        self.id_client = id_client
+        self.images = images
+        self.models = models
+
     @staticmethod
     def from_dict(obj: Any) -> 'Predict':
         assert isinstance(obj, dict)

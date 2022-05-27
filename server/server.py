@@ -20,7 +20,7 @@ def test():
 @app.route("/predict", methods=['POST'])
 def receive():    
     json = {"message": "Server running OK"}
-    print(request)
+    print(request.json)
     return jsonify(json)
 
 
