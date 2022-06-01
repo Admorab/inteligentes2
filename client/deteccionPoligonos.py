@@ -32,6 +32,8 @@ def calcularAreas(figuras):
 
 
 def detectarForma(imagen):
+    global captura, indexImage
+    cut = Cut()
     imagenGris = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
     # imagenHSV=cv2.cvtColor(imagen,cv2.COLOR_BGR2HSV)
     # cv2.imshow("Gris", imagenGris)
@@ -55,20 +57,23 @@ def detectarForma(imagen):
         bordes, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     areas = calcularAreas(figuras)
     # areaMin = cv2.getTrackbarPos("areaMin", nameWindow)
-    areaMin = 0
+    areaMin = 10
     i = 0
-    cut = Cut()
-    for figuraActual in figuras:
-        if areas[i] >= areaMin:
-            i = i + 1
-            vertices = cv2.approxPolyDP(
-                figuraActual, 0.05 * cv2.arcLength(figuraActual, True), True)
-            if len(vertices) == 4:
-                mensaje = "Cuadrado"
-                cv2.putText(imagen, mensaje, (10, 70),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-                cv2.drawContours(imagen, [figuraActual], 0, (0, 0, 255), 2)
-                cut.crop(imagenGris, [figuraActual], 1)
+    if captura:
+        for figuraActual in figuras:
+            if areas[i] >= areaMin:     
+                i=i+1
+                vertices = cv2.approxPolyDP(
+                    figuraActual, 0.05 * cv2.arcLength(figuraActual, True), True)
+                if len(vertices) == 4:
+                    mensaje = "Cuadrado"
+                    cv2.putText(imagen, mensaje, (10, 70),
+                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                    cv2.drawContours(imagen, [figuraActual], 0, (0, 0, 255), 2)
+                    
+                    print(indexImage)
+                    indexImage = cut.crop(imagenGris, [figuraActual], indexImage)
+        captura = False
 
     return imagen
 
@@ -109,30 +114,33 @@ def sendImages64(images, url, id_client):
 #     # cv2.drawContours(imagen, [figuraActual], 0, (0, 0, 255), 2)
 
 # Apertura cámara
-# cut = Cut()
-video = cv2.VideoCapture(0)
+
+video = cv2.VideoCapture(1)
 # constructorVentana()
 bandera = True
-mostrar = False
+captura = False
 images64 = []
+indexImage = 0
+i = 0
 url = "http://127.0.0.1:8181/predict"
 while bandera:
     _, imagen = video.read()
+    imagen = detectarForma(imagen)
+    cv2.imshow("Imagen", imagen)
+    
 
     # Parar el programa
     k = cv2.waitKey(5) & 0xFF
-    if k == 101:
+    if k == 99: #c
+        captura = True        
+    if k == 101: #e
         images64 = readImages()
         # sendImages64(images64, url, "1")
         print("RespuestaServidor:",sendImages64(images64, url, "1"))
-    if k == 99:
-        mostrar = True
-    if k == 27:
+
+    if k == 27: #scape
         bandera = False
-    if mostrar:
-        imagen = detectarForma(imagen)
-        cv2.imshow("Imagen", imagen)
-        # cut.crop()
+
     cv2.imshow("Imagen", imagen)
 video.release()
 cv2.destroyAllWindows()
