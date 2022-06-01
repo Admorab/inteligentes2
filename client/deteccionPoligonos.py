@@ -5,6 +5,7 @@ from Cut import Cut
 import base64
 import os
 import requests as http
+import math
 
 from models.predict_model import Predict
 
@@ -26,9 +27,16 @@ def nothing(x):
 
 def calcularAreas(figuras):
     areas = []
+    minimo = math.inf
+    figuraMin = []
     for figuraActual in figuras:
         areas.append(cv2.contourArea(figuraActual))
-    return areas
+        area = cv2.contourArea(figuraActual)
+        if area < minimo:
+            minimo = area
+            figuraMin = figuraActual
+        
+    return figuraMin, minimo
 
 
 def detectarForma(imagen):
@@ -55,14 +63,14 @@ def detectarForma(imagen):
     # Detección de la figura
     figuras, jerarquia = cv2.findContours(
         bordes, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    areas = calcularAreas(figuras)
+    figuraActual, area = calcularAreas(figuras)
     # areaMin = cv2.getTrackbarPos("areaMin", nameWindow)
-    areaMin = 10
-    i = 0
+    areaMin = 50
+    
     if captura:
-        for figuraActual in figuras:
-            if areas[i] >= areaMin:     
-                i=i+1
+        
+        if area >= areaMin:     
+            if len(figuraActual)!=0:
                 vertices = cv2.approxPolyDP(
                     figuraActual, 0.05 * cv2.arcLength(figuraActual, True), True)
                 if len(vertices) == 4:
