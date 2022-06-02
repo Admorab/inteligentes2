@@ -24,23 +24,18 @@ def test():
 
 @app.route("/predict", methods=['POST'])
 def receive():    
-    # json ={"llave":"valor"}     
-    # print(request.json)
-    # print(request)
     images64 = request.json["images"]    
     for image in images64:
         writeToDisk(image["content"], image["id"])
+        
     return jsonify({})
 
 def readb64(base64_string):
-    sbuf = BytesIO()
-    sbuf.write(base64.b64decode(base64_string))
-    pimg = Image.open(sbuf)
-    return cv2.cvtColor(np.array(pimg), cv2.COLOR_RGB2BGR)
+    return base64.b64decode(base64_string)
 
 def writeToDisk(img_data, id):        
     with open("Images/"+str(id)+".jpg", "wb") as fh:
-        fh.write(base64.decodebytes(readb64(img_data)))
+        fh.write(readb64(img_data))
 
 @app.after_request
 def log_the_status_code(response):
@@ -84,7 +79,6 @@ def log_the_status_code(response):
             "state": "error",
             "message": " Error making predictions",
         }).encode())
-    print(response.data)
     return response
 
 

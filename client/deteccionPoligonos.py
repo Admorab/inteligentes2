@@ -142,8 +142,8 @@ def sendImages64(images, url, id_client):
 
 # Apertura cámara
 
-video = cv2.VideoCapture(1)
-constructorVentana()
+video = cv2.VideoCapture(0)
+# constructorVentana()
 bandera = True
 captura = False
 images64 = []
