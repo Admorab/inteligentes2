@@ -10,6 +10,7 @@ from flask_cors import CORS
 import json
 from waitress import serve
 
+
 app = Flask(__name__)
 cors = CORS(app)
 host = "127.0.0.1"
@@ -27,6 +28,7 @@ def receive():
     images64 = request.json["images"]    
     for image in images64:
         writeToDisk(image["content"], image["id"])
+        
         
     return jsonify({})
 

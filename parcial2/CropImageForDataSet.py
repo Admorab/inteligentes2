@@ -57,37 +57,64 @@
 #####
 import cv2
 import os
-carpetas = os.listdir('Dataset\imagesROW')
+import numpy as np
+# carpetas = os.listdir('models\dataset\imagesROW')
+# i = 1
+# carpetas = [int(numeric_string) for numeric_string in carpetas]
+# carpetas.sort()
+# print(carpetas)
+# for carpeta in carpetas: 
+#     print("Set #:",i)
+#     j = 1
+#     images = os.listdir('models\dataset\imagesROW\\'+str(carpeta))
+#     for image in images:
+#         print("==============================================================")
+#         print(image)
+#         print('models\dataset\test\\'+str(carpeta)+'\\'+str(i)+'_'+str(j)+'.jpg')
+#         img = cv2.imread('models\dataset\imagesROW\\'+str(carpeta)+'\\'+image, cv2.IMREAD_UNCHANGED)
+         
+#         print('Original Dimensions : ',img.shape)
+         
+#         scale_percent = 4.13 # percent of original size
+#         width = int(img.shape[1] * scale_percent / 100)
+#         height = int(img.shape[0] * scale_percent / 100)
+#         dim = (width, height)
+          
+#         # resize image
+#         resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+#         resizedAndGray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+         
+#         print('Resized Dimensions : ',resizedAndGray.shape)
+        
+        
+#         bordes = cv2.Canny(resizedAndGray, 255, 255)
+
+#         kernel = np.ones((1, 1), np.uint8)
+#         bordes = cv2.dilate(bordes, kernel)
+         
+#         nameImage = str(i)+"\\"+str(i)+"_"+str(j)+".jpg"
+#         cv2.imwrite("models\dataset\\"+nameImage, bordes)
+        
+#         print("Image #:",j)
+#         j += 1
+#         print("==============================================================")        
+#     i += 1
+    
+carpetas = os.listdir('models/dataset/test')
 i = 1
+carpetas = [int(numeric_string) for numeric_string in carpetas]
+carpetas.sort()
+print(carpetas)
 for carpeta in carpetas: 
-    print("i:",i)
+    print("Set #:",i)
     j = 1
-    images = os.listdir('Dataset\imagesROW\\'+carpeta)
+    images = os.listdir('models/dataset/test/'+str(carpeta))
     for image in images:
         print("==============================================================")
         print(image)
-    
-        img = cv2.imread('Dataset\imagesROW\\'+carpeta+'\\'+image, cv2.IMREAD_UNCHANGED)
-         
-        print('Original Dimensions : ',img.shape)
-         
-        scale_percent = 4.13 # percent of original size
-        width = int(img.shape[1] * scale_percent / 100)
-        height = int(img.shape[0] * scale_percent / 100)
-        dim = (width, height)
-          
-        # resize image
-        resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-        resizedAndGray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
-         
-        print('Resized Dimensions : ',resizedAndGray.shape)
-         
-        nameImage = str(i)+"\\"+str(i)+"_"+str(j)+".jpg"
-        cv2.imwrite("Dataset\\"+nameImage, resizedAndGray)
-        
-        print("j:",j)
+        os.rename('models/dataset/test/'+str(carpeta)+'/'+image, 'models/dataset/test/'+str(carpeta)+'/'+str(i)+'_'+str(j)+'.jpg')
+        print('models/dataset/test/'+str(carpeta)+'/'+str(i)+'_'+str(j)+'.jpg')
         j += 1
-        print("==============================================================")        
     i += 1
 
 
