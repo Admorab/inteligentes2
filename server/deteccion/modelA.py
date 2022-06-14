@@ -29,8 +29,8 @@ def cargarDatos(fase, numeroCategorias, limite, width, height):
     imagenesCargadas=[]
     valorEsperado=[]
 
-    for categoria in range(1, numeroCategorias):
-        for idImagen in range(1, limite[categoria]):
+    for categoria in range(0, numeroCategorias):
+        for idImagen in range(0, limite[categoria]):
             ruta=fase+str(categoria)+"/"+str(categoria)+"_"+str(idImagen)+".jpg"
             imagen=cv2.imread(ruta)
             imagen=cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
@@ -55,12 +55,12 @@ height = 256
 pixeles = width * height
 
 # Si es a blanco y negro es -> 1 si es RGB es -> 3
-num_channels = 3
+num_channels = 1
 img_shape = (width, height, num_channels)
 
 # Cant elementos a clasifica
 num_clases = 5
-cantidad_datos_entenamiento=[1796,367,305,1939,1613]
+cantidad_datos_entenamiento=[1797,367,305,1939,1613]
 cantidad_datos_pruebas=[30,30,30,30,30]
 
 ##Carga de los datos
@@ -118,7 +118,7 @@ scnn_predicted = np.argmax(scnn_pred, axis=1)
 scnn_cm = confusion_matrix(np.argmax(probabilidades_prueba, axis=1), scnn_predicted)
 
 # Visualiamos la matriz de confusión
-scnn_df_cm = pd.DataFrame(scnn_cm, range(4), range(4))
+scnn_df_cm = pd.DataFrame(scnn_cm, range(5), range(5))
 plt.figure(figsize=(20, 14))
 sn.set(font_scale=1.4)  # for label size
 sn.heatmap(scnn_df_cm, annot=True, annot_kws={"size": 12})  # font size
