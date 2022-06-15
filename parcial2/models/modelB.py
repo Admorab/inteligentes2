@@ -27,8 +27,8 @@ def cargarDatos(fase, numeroCategorias, limite, width, height):
     imagenesCargadas=[]
     valorEsperado=[]
 
-    for categoria in range(1, numeroCategorias):
-        for idImagen in range(1, limite[categoria]):
+    for categoria in range(0, numeroCategorias):
+        for idImagen in range(0, limite[categoria]):
             ruta=fase+str(categoria)+"/"+str(categoria)+"_"+str(idImagen)+".jpg"
             imagen=cv2.imread(ruta)
             imagen=cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
@@ -57,8 +57,8 @@ img_shape = (width, height, num_channels)
 
 # Cant elementos a clasifica
 num_clases = 10
-cantidad_datos_entenamiento=[50,50,50,50,50,50,50,50,50,50]
-cantidad_datos_pruebas=[10,10,10,10,10,10,10,10,10,10]
+cantidad_datos_entenamiento=[64,64,64,64,56,56,56,56,56,56]
+cantidad_datos_pruebas=[16,16,16,16,14,14,14,14,14,14]
 
 # Carga de los datos
 imagenes, probabilidades = cargarDatos(
@@ -109,6 +109,8 @@ model.save(ruta)
 model.summary()
 
 metricResult = model.evaluate(x=imagenes, y=probabilidades)
+print("----METRIC RESULT----")
+print(metricResult)
 
 scnn_pred = model.predict(imagenes_prueba, batch_size=60, verbose=1)
 scnn_predicted = np.argmax(scnn_pred, axis=1)
@@ -118,7 +120,7 @@ scnn_cm = confusion_matrix(
     np.argmax(probabilidades_prueba, axis=1), scnn_predicted)
 
 # Visualiamos la matriz de confusión
-scnn_df_cm = pd.DataFrame(scnn_cm, range(9), range(9))
+scnn_df_cm = pd.DataFrame(scnn_cm, range(10), range(10))
 plt.figure(figsize=(20, 14))
 sn.set(font_scale=1.4)  # for label size
 sn.heatmap(scnn_df_cm, annot=True, annot_kws={"size": 12})  # font size

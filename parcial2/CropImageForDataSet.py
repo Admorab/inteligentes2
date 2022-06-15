@@ -101,13 +101,13 @@ import numpy as np
 #     i += 1
     
 carpetas = os.listdir('models/dataset/test')
-i = 1
+i = 0
 carpetas = [int(numeric_string) for numeric_string in carpetas]
 carpetas.sort()
 print(carpetas)
 for carpeta in carpetas: 
     print("Set #:",i)
-    j = 1
+    j = 0
     images = os.listdir('models/dataset/test/'+str(carpeta))
     for image in images:
         print("==============================================================")
