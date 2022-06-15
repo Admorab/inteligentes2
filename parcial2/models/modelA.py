@@ -13,11 +13,10 @@ import numpy as np
 import cv2
 from Prediccion import Prediccion
 
-
-#Se usan las siguientes librerias para trabajo con red Neuronal
+# Se usan las siguientes librerias para trabajo con red Neuronal
 
 from keras.models import Sequential
-from keras.layers import InputLayer,Input,Conv2D, MaxPool2D,Reshape,Dense,Flatten
+from keras.layers import InputLayer, Input, Conv2D, MaxPool2D, Reshape, Dense, Flatten
 
 from sklearn.metrics import confusion_matrix, classification_report
 import matplotlib.pyplot as plt
@@ -26,20 +25,20 @@ import pandas as pd
 
 
 def cargarDatos(rutaOrigen, numeroCategorias, limite, width, height):
-    imagenesCargadas=[]
-    valorEsperado=[]
+    imagenesCargadas = []
+    valorEsperado = []
 
     for categoria in range(0, numeroCategorias):
         for idImagen in range(0, limite[categoria]):
-            ruta=rutaOrigen+str(categoria)+"/"+str(categoria)+"_"+str(idImagen)+".jpg"
-            imagen=cv2.imread(ruta)
-            imagen=cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
+            ruta = rutaOrigen + str(categoria) + "/" + str(categoria) + "_" + str(idImagen) + ".jpg"
+            imagen = cv2.imread(ruta)
+            imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
             imagen = cv2.resize(imagen, (width, height))
-            imagen=imagen.flatten()
-            imagen=imagen/255
+            imagen = imagen.flatten()
+            imagen = imagen / 255
             imagenesCargadas.append(imagen)
-            probabilidades=np.zeros(numeroCategorias)
-            probabilidades[categoria]=1
+            probabilidades = np.zeros(numeroCategorias)
+            probabilidades[categoria] = 1
             valorEsperado.append(probabilidades)
     imagenes_entrenamiento = np.array(imagenesCargadas)
     valores_esperados = np.array(valorEsperado)
@@ -60,13 +59,12 @@ img_shape = (width, height, num_channels)
 
 # Cant elementos a clasifica
 num_clases = 10
-cantidad_datos_entenamiento=[64,64,64,64,56,56,56,56,56,56]
-cantidad_datos_pruebas=[16,16,16,16,14,14,14,14,14,14]
+cantidad_datos_entenamiento = [64, 64, 64, 64, 56, 56, 56, 56, 56, 56]
+cantidad_datos_pruebas = [16, 16, 16, 16, 14, 14, 14, 14, 14, 14]
 
 ##Carga de los datos
 imagenes, probabilidades = cargarDatos("dataset/train/", num_clases, cantidad_datos_entenamiento, width, height)
 print(imagenes)
-
 
 model = Sequential()
 
@@ -96,16 +94,15 @@ model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accur
 model.fit(x=imagenes, y=probabilidades, epochs=30, batch_size=60)
 # Pruebas
 imagenes_prueba, probabilidades_prueba = cargarDatos("dataset/test/", num_clases, cantidad_datos_pruebas, width, height)
-resultados=model.evaluate(x=imagenes_prueba, y=probabilidades_prueba)
+resultados = model.evaluate(x=imagenes_prueba, y=probabilidades_prueba)
 print("METRIC NAMES", model.metrics_names)
 print("RESULTADOS", resultados)
 
-
 ## Guardar el modelo
-ruta="models/model_a.h5"
+ruta = "models/model_a.h5"
 model.save(ruta)
 
-#Estructura de la red
+# Estructura de la red
 
 model.summary()
 

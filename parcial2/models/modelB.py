@@ -12,7 +12,6 @@ import numpy as np
 import cv2
 from Prediccion import Prediccion
 
-
 # Se usan las siguientes librerias para trabajo con red Neuronal
 
 from keras.models import Sequential
@@ -23,21 +22,22 @@ import matplotlib.pyplot as plt
 import seaborn as sn
 import pandas as pd
 
+
 def cargarDatos(fase, numeroCategorias, limite, width, height):
-    imagenesCargadas=[]
-    valorEsperado=[]
+    imagenesCargadas = []
+    valorEsperado = []
 
     for categoria in range(0, numeroCategorias):
         for idImagen in range(0, limite[categoria]):
-            ruta=fase+str(categoria)+"/"+str(categoria)+"_"+str(idImagen)+".jpg"
-            imagen=cv2.imread(ruta)
-            imagen=cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
+            ruta = fase + str(categoria) + "/" + str(categoria) + "_" + str(idImagen) + ".jpg"
+            imagen = cv2.imread(ruta)
+            imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
             imagen = cv2.resize(imagen, (width, height))
-            imagen=imagen.flatten()
-            imagen=imagen/255
+            imagen = imagen.flatten()
+            imagen = imagen / 255
             imagenesCargadas.append(imagen)
-            probabilidades=np.zeros(numeroCategorias)
-            probabilidades[categoria]=1
+            probabilidades = np.zeros(numeroCategorias)
+            probabilidades[categoria] = 1
             valorEsperado.append(probabilidades)
     imagenes_entrenamiento = np.array(imagenesCargadas)
     valores_esperados = np.array(valorEsperado)
@@ -46,6 +46,7 @@ def cargarDatos(fase, numeroCategorias, limite, width, height):
     print("CANTIDAD DE VALORES", len(valores_esperados))
 
     return imagenes_entrenamiento, valores_esperados
+
 
 width = 128
 height = 128
@@ -57,8 +58,8 @@ img_shape = (width, height, num_channels)
 
 # Cant elementos a clasifica
 num_clases = 10
-cantidad_datos_entenamiento=[64,64,64,64,56,56,56,56,56,56]
-cantidad_datos_pruebas=[16,16,16,16,14,14,14,14,14,14]
+cantidad_datos_entenamiento = [64, 64, 64, 64, 56, 56, 56, 56, 56, 56]
+cantidad_datos_pruebas = [16, 16, 16, 16, 14, 14, 14, 14, 14, 14]
 
 # Carga de los datos
 imagenes, probabilidades = cargarDatos(
