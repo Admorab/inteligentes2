@@ -4,7 +4,7 @@ from Cut import Cut
 from Prediccion import Prediccion
 
 nameWindow = "Calculadora"
-prediccion = Prediccion('models/models/modeloA.h5')
+prediccion = Prediccion('models/models/model_c.h5')
 
 
 def nothing(x):
@@ -16,7 +16,7 @@ def constructorVentana():
     cv2.createTrackbar("min", nameWindow, 0, 255, nothing)
     cv2.createTrackbar("max", nameWindow, 100, 255, nothing)
     cv2.createTrackbar("kernel", nameWindow, 1, 100, nothing)
-    cv2.createTrackbar("areaMin", nameWindow, 500, 100000, nothing)
+    cv2.createTrackbar("areaMin", nameWindow, 500, 1000000, nothing)
 
 
 def calcularAreas(figuras):
@@ -31,10 +31,11 @@ def detectarForma(imagen):
     cut = Cut()
     imagenGris = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
     # cv2.imshow("Gris", imagenGris)
-    tamañoKernel = 10
+    tamañoKernel = 30
     min = 255
     max = 255
-    areaMin = 70068
+    # areaMin = 661500
+    areaMin = 600500
     # min=cv2.getTrackbarPos("min", nameWindow)
     # max=cv2.getTrackbarPos("max", nameWindow)
     # areaMin = cv2.getTrackbarPos("areaMin", nameWindow)
@@ -44,31 +45,46 @@ def detectarForma(imagen):
 
     kernel = np.ones((tamañoKernel, tamañoKernel), np.uint8)
     bordes = cv2.dilate(bordes, kernel)
-    cv2.imshow("Bordes", bordes)
+    # cv2.imshow("Bordes", bordes)
     figuras, jerarquia = cv2.findContours(
         bordes, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     areas = calcularAreas(figuras)
 
-    posIzq = 23
-    posDer = 3
-    # try: 
-    #     for ver in [ posIzq, posDer]:
-    #         if areas and areas[ver] > areaMin:
-    #             vertices = cv2.approxPolyDP(
-    #                 figuras[ver], 0.05*cv2.arcLength(figuras[ver], True), True)
-    #             if len(vertices) == 4:
-    #                 cv2.drawContours(imagen, [figuras[ver]], 0, (0, 0, 255), 2)
-    # except:
-    #     pass
-    i=0
-    for fig in figuras:
-        if areas and areas[i] > areaMin:
-            vertices = cv2.approxPolyDP(
-                figuras[i], 0.05*cv2.arcLength(figuras[i], True), True)
-            if len(vertices) == 4:
-                cv2.drawContours(imagen, [figuras[i]], 0, (0, 0, 255), 2)
-                print(i,"area",areas[i])
-        i=i+1
+    posDer = 0    
+    posIzq = 11
+    cont = [0,28,29,30,31]
+    try: 
+        for ver in [0,24]:
+            if areas and areas[ver] > areaMin:
+                vertices = cv2.approxPolyDP(
+                    figuras[ver], 0.05*cv2.arcLength(figuras[ver], True), True)
+                if len(vertices) == 4:
+                    cv2.drawContours(imagen, [figuras[ver]], 0, (0, 0, 255), 2)
+    except:
+        pass
+
+    # bor = []
+    # bor.clear()
+    # i=0
+    # for fig in figuras:
+    #     if areas and areas[i] > areaMin:
+    #         vertices = cv2.approxPolyDP(
+    #             figuras[i], 0.05*cv2.arcLength(figuras[i], True), True)
+    #         if len(vertices) == 4:
+    #             cv2.drawContours(imagen, [figuras[i]], 0, (0, 0, 255), 2)
+    #             print(i,"area",areas[i])
+    #             bor.append(i)
+                
+    #     i=i+1
+    # print(bor)
+    
+            
+    # for j in bor:
+    #     Izq = cut.crop(imagenGris, [figuras[j]], indexImage)
+    #     # Izq = Izq[y:y+h, x:x+w]
+    #     Izq = cv2.resize(Izq, (128, 128), cv2.INTER_AREA)
+    #     cv2.imshow(str(j), Izq)
+    #     # cv2.moveWindow("Izq", 40,30)
 
 
     # print(type(figuras.item(posIzq)))
@@ -83,7 +99,7 @@ def detectarForma(imagen):
         
         
         Izq = cut.crop(imagenGris, [figuras[posIzq]], indexImage)
-        Izq = Izq[y:y+h, x:x+w]
+        # Izq = Izq[y:y+h, x:x+w]
         Izq = cv2.resize(Izq, (128, 128), cv2.INTER_AREA)
         cv2.imshow("Izq", Izq)
         cv2.moveWindow("Izq", 40,30)
@@ -96,7 +112,7 @@ def detectarForma(imagen):
         
     
         Der = cut.crop(imagenGris, [figuras[posDer]], indexImage)
-        Der = Der[y:y+h, x:x+w]
+        # Der = Der[y:y+h, x:x+w]
         Der = cv2.resize(Der, (128, 128), cv2.INTER_AREA)
         cv2.imshow("Der", Der)
         cv2.moveWindow("Der", 180,30)
@@ -129,7 +145,7 @@ indexImage = 0
 i = 0
 url = "http://127.0.0.1:8181/predict"
 acumulado = 0
-while bandera:
+while bandera:    
     _, imagen = video.read()    
     imagen = detectarForma(imagen)
     imagen = cv2.resize(imagen, (1280, 720), cv2.INTER_AREA)
