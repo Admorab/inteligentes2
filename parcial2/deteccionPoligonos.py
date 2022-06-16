@@ -25,7 +25,13 @@ def calcularAreas(figuras):
         areas.append(cv2.contourArea(figuraActual))
     return areas
 
-
+def showKeys():
+    cv2.putText(imagen, "Presione 'esc' para salir", (50, 1000), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                (0, 255, 0), 2, cv2.LINE_AA)
+    cv2.putText(imagen, "Presione 'P' para predecir y realizar la suma de las cartas", (50, 1050), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                (0, 255, 0), 2, cv2.LINE_AA)
+    
+    
 def detectarForma(imagen):
     global captura, indexImage, predict, izqVal, derVal, total, acumulado
     cut = Cut()
@@ -68,7 +74,9 @@ def detectarForma(imagen):
     bor = []
     # bor.clear()
     i = 0
+    showKeys()
     for fig in figuras:
+        
         if areas and areas[i] > areaMin:
             vertices = cv2.approxPolyDP(
                 figuras[i], 0.05 * cv2.arcLength(figuras[i], True), True)
@@ -181,6 +189,7 @@ while bandera:
     imagen = detectarForma(imagen)
     imagen = cv2.resize(imagen, (1280, 720), cv2.INTER_AREA)
     cv2.imshow("Imagen", imagen)
+    
 
     # Parar el programa
     k = cv2.waitKey(5) & 0xFF
