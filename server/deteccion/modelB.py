@@ -48,8 +48,8 @@ def cargarDatos(fase, numeroCategorias, limite, width, height):
     return imagenes_entrenamiento, valores_esperados
 
 
-width = 128
-height = 128
+width = 256
+height = 256
 pixeles = width * height
 
 # Si es a blanco y negro es -> 1 si es RGB es -> 3
@@ -57,9 +57,9 @@ num_channels = 1
 img_shape = (width, height, num_channels)
 
 # Cant elementos a clasifica
-num_clases = 10
-cantidad_datos_entenamiento = [64, 64, 64, 64, 56, 56, 56, 56, 56, 56]
-cantidad_datos_pruebas = [16, 16, 16, 16, 14, 14, 14, 14, 14, 14]
+num_clases = 5
+cantidad_datos_entenamiento = [1797, 367, 305, 1939, 1613]
+cantidad_datos_pruebas = [30, 30, 30, 30, 30]
 
 # Carga de los datos
 imagenes, probabilidades = cargarDatos(
@@ -121,7 +121,7 @@ scnn_cm = confusion_matrix(
     np.argmax(probabilidades_prueba, axis=1), scnn_predicted)
 
 # Visualiamos la matriz de confusión
-scnn_df_cm = pd.DataFrame(scnn_cm, range(10), range(10))
+scnn_df_cm = pd.DataFrame(scnn_cm, range(5), range(5))
 plt.figure(figsize=(20, 14))
 sn.set(font_scale=1.4)  # for label size
 sn.heatmap(scnn_df_cm, annot=True, annot_kws={"size": 12})  # font size
