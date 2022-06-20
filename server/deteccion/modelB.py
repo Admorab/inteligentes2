@@ -10,7 +10,8 @@ import tensorflow as tf
 import keras
 import numpy as np
 import cv2
-from Prediccion import Prediccion
+# from Prediccion import Prediccion
+
 
 # Se usan las siguientes librerias para trabajo con red Neuronal
 

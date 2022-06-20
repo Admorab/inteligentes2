@@ -4,7 +4,6 @@ Created on Mon Jun 13 18:44:06 2022
 
 @author: luisd
 """
-
 import base64
 
 import tensorflow as tf
