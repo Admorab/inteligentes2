@@ -19,4 +19,4 @@ class Prediccion():
         predicciones = modelo.predict(x=imagenesCargadasNPA)
         print("Predicciones=", predicciones)
         clasesMayores = np.argmax(predicciones, axis=1)
-        return clasesMayores[0]
+        return int(clasesMayores[0])

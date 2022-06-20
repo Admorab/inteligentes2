@@ -5,6 +5,8 @@ from Cut import Cut
 import base64
 import os
 import requests as http
+import timeit
+
 
 from models.predict_model import Predict
 
@@ -127,7 +129,7 @@ def sendImages64(images, url, id_client):
         "id_client": id_client,
         "images": images,
         "models": [
-            "C"
+            1, 2, 3
         ]
     }
     return http.post(url, json=predict).content
@@ -159,7 +161,10 @@ while bandera:
     if k == 101:  # e
         images64 = readImages()
         # sendImages64(images64, url, "1")
+        start = timeit.default_timer()
         print("RespuestaServidor:", sendImages64(images64, url, "1"))
+        stop = timeit.default_timer()
+        print('Time: ', stop - start)
 
     if k == 27:  # scape
         bandera = False

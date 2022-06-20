@@ -15,23 +15,28 @@ host = "127.0.0.1"
 port = 8181
 prediccion = Prediccion()
 models = []
-predicciones = [
-    {
-        "model_id": "A",
-        "results": [
-        ]
-    },
-    {
-        "model_id": "B",
-        "results": [
-        ]
-    },
-    {
-        "model_id": "C",
-        "results": [
-        ]
-    },
-]
+predicciones = []
+
+
+def pred():
+    global predicciones
+    predicciones = [
+        {
+            "model_id": "A",
+            "results": [
+            ]
+        },
+        {
+            "model_id": "B",
+            "results": [
+            ]
+        },
+        {
+            "model_id": "C",
+            "results": [
+            ]
+        },
+    ]
 
 
 @app.route("/", methods=['GET'])
@@ -42,32 +47,32 @@ def test():
 
 @app.route("/predict", methods=['POST'])
 def receive():
-    global models
+    global models, predicciones
+    pred()
     images64 = request.json["images"]
     models = request.json["models"]
     for image in images64:
         imageAux = writeToDisk(image["content"], image["id"])
-        predict(cv2.imread(imageAux), image["id"])
+        predict(cv2.imread(imageAux), str(image["id"]))
     return jsonify({})
 
 
 def predict(image, id):
     global predicciones
-    print(models)
     for model in models:
-        if model == "A":
+        if str(model) == "1":
             predicciones[0]["results"].append({
                 "class": prediccion.predecir(image, "deteccion/models/model_a.h5"),
                 "id-image": id
             })
-        elif model == "B":
+        elif str(model) == "2":
             predicciones[1]["results"].append({
-                "class": prediccion.predecir(image, "deteccion/models/model_b.h5"),
+                "class": prediccion.predecir(image, "deteccion/models/model_c.h5"),
                 "id-image": id
             })
-        elif model == "C":
+        elif str(model) == "3":
             predicciones[2]["results"].append({
-                "class": prediccion.predecir(image, "deteccion/models/model_c.h5"),
+                "class": prediccion.predecir(image, "deteccion/models/model_b.h5"),
                 "id-image": id
             })
 
@@ -86,17 +91,20 @@ def writeToDisk(img_data, id):
 @app.after_request
 def log_the_status_code(response):
     status_as_integer = response.status_code
+    print("PREDICCIONES")
+    print(predicciones)
+    # prediccion = json.dumps(predicciones)
     if (status_as_integer == 200):
         response.set_data(json.dumps({
             "state": "success",
             "message": "Predictions made satisfactorily",
             "results": predicciones
-        }).encode())
+        }))
     if (status_as_integer == 400):
         response.set_data(json.dumps({
             "state": "error",
             "message": " Error making predictions",
-        }).encode())
+        }))
     return response
 
 
