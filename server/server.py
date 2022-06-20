@@ -1,15 +1,13 @@
 import base64
-from PIL import Image
+
 import cv2
-from io import BytesIO
-import numpy as np
 from flask import Flask
 from flask import jsonify
 from flask import request
 from flask_cors import CORS
 import json
 from waitress import serve
-from deteccion import Prediccion
+from deteccion.Prediccion import Prediccion
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -49,29 +47,29 @@ def receive():
     models = request.json["models"]
     for image in images64:
         imageAux = writeToDisk(image["content"], image["id"])
-        predict(imageAux, image["id"])
+        predict(cv2.imread(imageAux), image["id"])
+    return jsonify({})
 
 
 def predict(image, id):
     global predicciones
+    print(models)
     for model in models:
         if model == "A":
             predicciones[0]["results"].append({
-                "class": prediccion.predecir(image, "models/model_a.h5"),
+                "class": prediccion.predecir(image, "deteccion/models/model_a.h5"),
                 "id-image": id
             })
         elif model == "B":
             predicciones[1]["results"].append({
-                "class": prediccion.predecir(image, "models/model_b.h5"),
+                "class": prediccion.predecir(image, "deteccion/models/model_b.h5"),
                 "id-image": id
             })
         elif model == "C":
             predicciones[2]["results"].append({
-                "class": prediccion.predecir(image, "models/model_c.h5"),
+                "class": prediccion.predecir(image, "deteccion/models/model_c.h5"),
                 "id-image": id
             })
-
-    return jsonify({})
 
 
 def readb64(base64_string):
@@ -82,7 +80,7 @@ def writeToDisk(img_data, id):
     with open("Images/" + str(id) + ".jpg", "wb") as fh:
         image = readb64(img_data)
         fh.write(image)
-        return image
+        return "Images/" + str(id) + ".jpg"
 
 
 @app.after_request

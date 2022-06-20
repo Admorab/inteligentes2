@@ -58,22 +58,21 @@ def detectarForma(imagen):
     figuras, jerarquia = cv2.findContours(
         bordes, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     areas = calcularAreas(figuras)
-    
+
     i = 0
-    
+
     #####
     # last = len(figuras)-1
-    last = 1
-    if areas and last<len(areas) and areas[last] >= areaMin:
+    last = 0
+    if areas and last < len(areas) and areas[last] >= areaMin:
         vertices = cv2.approxPolyDP(
             figuras[last], 0.05 * cv2.arcLength(figuras[last], True), True)
         if len(vertices) == 4:
             cv2.drawContours(imagen, [figuras[last]], 0, (0, 0, 255), 2)
 
     #####
-    
-    
-    if areas and last<len(areas) and captura and areas[last] >= areaMin:
+
+    if areas and last < len(areas) and captura and areas[last] >= areaMin:
 
         vertices = cv2.approxPolyDP(
             figuras[last], 0.05 * cv2.arcLength(figuras[last], True), True)
@@ -82,27 +81,25 @@ def detectarForma(imagen):
             cv2.putText(imagen, mensaje, (10, 70),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
             cv2.drawContours(imagen, [figuras[last]], 0, (0, 0, 255), 2)
-            
+
             print(indexImage)
             indexImage = cut.crop(imagenGris, [figuras[last]], indexImage)
-    # for figuraActual in figuras:
-    #     if areas[i] >= areaMin:     
-    #         i=i+1
-    #         vertices = cv2.approxPolyDP(
-    #             figuraActual, 0.05 * cv2.arcLength(figuraActual, True), True)
-    #         if len(vertices) == 4:
-    #             mensaje = "Cuadrado"
-    #             cv2.putText(imagen, mensaje, (10, 70),
-    #                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-    #             cv2.drawContours(imagen, [figuraActual], 0, (0, 0, 255), 2)
-                
-    #             print(indexImage)
-    #             # indexImage = cut.crop(imagenGris, [figuraActual], indexImage)
+        # for figuraActual in figuras:
+        #     if areas[i] >= areaMin:
+        #         i=i+1
+        #         vertices = cv2.approxPolyDP(
+        #             figuraActual, 0.05 * cv2.arcLength(figuraActual, True), True)
+        #         if len(vertices) == 4:
+        #             mensaje = "Cuadrado"
+        #             cv2.putText(imagen, mensaje, (10, 70),
+        #                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+        #             cv2.drawContours(imagen, [figuraActual], 0, (0, 0, 255), 2)
+
+        #             print(indexImage)
+        #             # indexImage = cut.crop(imagenGris, [figuraActual], indexImage)
         captura = False
 
     return imagen
-
-
 
 
 def readImages():
@@ -130,9 +127,9 @@ def sendImages64(images, url, id_client):
         "id_client": id_client,
         "images": images,
         "models": [
-            "1"
+            "C"
         ]
-    }    
+    }
     return http.post(url, json=predict).content
 
 
@@ -142,7 +139,7 @@ def sendImages64(images, url, id_client):
 
 # Apertura cámara
 
-video = cv2.VideoCapture(0)
+video = cv2.VideoCapture(2)
 # constructorVentana()
 bandera = True
 captura = False
@@ -154,18 +151,17 @@ while bandera:
     _, imagen = video.read()
     imagen = detectarForma(imagen)
     cv2.imshow("Imagen", imagen)
-    
 
     # Parar el programa
     k = cv2.waitKey(5) & 0xFF
-    if k == 99: #c
-        captura = True        
-    if k == 101: #e
+    if k == 99:  # c
+        captura = True
+    if k == 101:  # e
         images64 = readImages()
         # sendImages64(images64, url, "1")
-        print("RespuestaServidor:",sendImages64(images64, url, "1"))
+        print("RespuestaServidor:", sendImages64(images64, url, "1"))
 
-    if k == 27: #scape
+    if k == 27:  # scape
         bandera = False
 
     cv2.imshow("Imagen", imagen)
