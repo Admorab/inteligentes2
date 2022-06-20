@@ -4,10 +4,11 @@ import cv2
 
 
 class Prediccion():
-    def __init__(self, ruta):
-        self.modelo = load_model(ruta)
+    def __init__(self):
+        pass
 
-    def predecir(self, imagen):
+    def predecir(self, imagen, ruta):
+        self.modelo = load_model(ruta)
         # imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
         # imagen = cv2.resize(imagen, (self.ancho, self.alto))
         imagen = imagen.flatten()
